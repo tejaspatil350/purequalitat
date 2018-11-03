@@ -1,0 +1,53 @@
+int led = D0;
+
+int ldr = A0; 
+int power = A5; 
+
+int analogvalue; 
+
+
+void setup() {
+
+    
+    pinMode(led,OUTPUT); 
+    pinMode(ldr,INPUT);  
+    pinMode(power,OUTPUT); 
+  
+    digitalWrite(power,HIGH);
+
+    
+    Particle.function("led",ledToggle);
+    
+}
+
+
+.
+
+void loop() {
+
+    
+    analogvalue = analogRead(ldr);
+    delay(100);
+
+}
+
+
+
+int ledToggle 
+{
+
+    if 
+ {
+        digitalWrite(led,HIGH);
+        return 1;
+    }
+    else if 
+ {
+        digitalWrite(led,LOW);
+        return 0;
+    }
+    else {
+        return -1;
+    }
+
+}
