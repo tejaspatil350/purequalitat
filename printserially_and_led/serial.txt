@@ -1,0 +1,23 @@
+int LED = D3;                          //define led as variable for d3 pin
+int my;                                //my as variable 
+char read;                             //
+void setup() 
+{
+ Serial.begin(9600);                   // via TX/RX pins and hardware serial baud rate are 9600 
+ pinMode(LED, OUTPUT);                // led as output
+}
+
+void loop()  
+{
+    Serial.print("purequalitat");               //Prints data to the serial port as human-readable ASCII text.
+    analogWrite(LED, 255);                     //used for varying brightness of led      
+                                              //Writes an analog value to a pin as a digital PWM (pulse-width modulated) signal. The default frequency of the PWM signal is 500 Hz.
+                                             //the pin will generate a steady square wave of the specified duty cycle until the next call to analogWrite()
+                                            //analogWrite contain two arguments pin: the number of the pin whose value you wish to set value: the duty cycle: between 0 (always off) and 255 (always on). Since between 0 and 255 (default 8-bit resolution) or 2^(analogWriteResolution(pin)) - 1 in general.
+    Serial.println(digitalRead(LED));      //print digital value for led and move the cursor to new line 
+    read = digitalRead(LED);               //sets read equal to LED
+    Serial.print(read);                       //serial prints read variable
+    my = analogRead(LED);                     //sets my equal to LED
+    Serial.print(my);                         // serial print my variable value
+    delay(1000);                              //delay of 1sec
+}
