@@ -1,0 +1,14 @@
+int LED = D3;                                 //set led to d3 pin 
+
+void setup() 
+{
+    pinMode(LED, OUTPUT);                 //led as an output
+}
+
+void loop() 
+{
+    analogWrite(LED, 0);                    //led as off
+    delay(1000);                            //delay of 1sec
+    analogWrite(LED, 255);                  //led as on
+    delay(1000);                            //delay of 1sec
+}
