@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+ 
+int main()
+{
+    int summa = 0, antal, max =-0, min= INT_MAX;
+    int tal, k;
+    float medel;
+    int again;
+    start:
+    do
+    {
+    printf("Write a number: \n");
+    scanf(" %d",&tal);
+    if (tal>max) max=tal;
+    if (tal<min) min=tal;
+    summa= summa+tal;
+    antal++;
+    }
+    while (tal >=0);
+    medel=(float) summa/antal;
+    printf("Sum of the numbers: %d \n", summa);
+    printf("Highest number: %d \n", max);
+    printf("Lowest number: %d \n", min);
+    printf("Average number: %f \n", medel);
+    {
+    printf("If u wanna play again press 1 if not press 2 \n");
+    scanf(" %d", &again);
+    if (again==1){
+    goto start;
+    }
+    }
+}
