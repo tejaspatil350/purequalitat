@@ -1,0 +1,30 @@
+# include <math.h>                              //as exp term used so math library
+void setup()                                   //initalization of variables
+{
+    Serial.begin(9600);                       //baud-rate defined                         
+}
+
+void loop() 
+{
+    float sensor_volt;                          //gas sensor value in voltage
+    float sensorValue;                          //gas sensor value
+
+    sensorValue = analogRead(A0);              //The device has 8 channels (A0 to A7) with a 12-bit resolution and map input voltages between 0 and 3.3 volts into integer values between 0 and 4095                       
+                                               //Reads the value from the A0 pin
+    double lpgppm = 26.572*exp(1.2894*(sensorValue*3.3/4095)); //Multiply raw analog value by 3.3/4095 to convert to a voltage return ppm
+    const int LPGthresh =450 ;                  //set LPGthreshold equal to 450
+                                                //When measuring gases like carbon dioxide, oxygen, or methane, the term concentration is used to describe the amount of gas by volume in the air. The 2 most common units of measurement are parts-per-million, and percent concentration. Parts-per-million (abbreviated ppm) is the ratio of one gas to another
+if (lpgppm >= LPGthresh)                        //ppm value greater than  or equal to LPGthresh
+{
+Serial.print("lpgdetected");                    //print "lpgdetected" in serial window
+}
+
+
+    Serial.print("sensorvalue = ");               //print "sensorvalue = " in serial window
+    Serial.print(sensorValue);                    //print value of sensorValue
+    Serial.println("V");                          //print "V" in serial window
+    Serial.print("lpgpp");                        //print "lpgpp" in serial
+    Serial.print(lpgppm);                          //print value of lpgppm
+    
+    delay(1000);                                   //wait for 1sec
+}
