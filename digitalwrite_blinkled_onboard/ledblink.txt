@@ -1,0 +1,26 @@
+int LED = D7;                                        //This one is the little blue LED on your board, define LED as variable for d7 onboard led and integer as data type 
+                                                    // The setup function is a standard part of any microcontroller program.
+                                                   // It runs only once when the device boots up or is reset.
+                                                  // setup is used for initialization of pins as input or output
+void setup()  
+{
+    pinMode(LED, OUTPUT);                  // pinMode() takes two arguments, pin: the number of the pin whose mode you wish to set and mode: INPUT or OUTPUT.     
+                                          // We are going to tell our device that D7 (which we named LED) is going to be output
+                                         // (That means that we will be sending voltage to them, rather than monitoring voltage that comes from them)
+                                        //its voltage will be set to the corresponding value: 3.3V for HIGH, 0V (ground) for LOW. 
+}
+                                       //void is a type of function
+                                       // This routine gets repeated over and over, as quickly as possible and as many times as possible, after the setup function is called. 
+
+void loop() 
+{
+                                           // To blink the LED, first we'll turn it on..
+                                          //digitalWrite() takes two arguments, pin: the number of the pin whose value you wish to set and value: HIGH or LOW.
+    digitalWrite(LED, HIGH);             //its voltage will be set to the corresponding value: 3.3V for HIGH, 0V (ground) for LOW.
+    delay(1000);                        // 1sec delay
+    digitalWrite(LED, LOW);            // Then we'll turn it off...
+    delay(1000);                      // Wait 1 second..
+
+                                    // And repeat!
+
+}
