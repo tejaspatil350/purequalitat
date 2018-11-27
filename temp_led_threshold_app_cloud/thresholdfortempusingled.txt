@@ -1,0 +1,82 @@
+#include <blynk.h>                       //blynk library
+
+#include <Adafruit_DHT.h>                     //dht library
+
+#include "Adafruit_DHT.h"
+
+#define DHTPIN A2                                 //pin defined
+
+#define DHTTYPE DHT11                          //sensor type   
+ 
+char auth [] ="fc51a600bfd347eb9edf6e70e9a13b07 ";   //token of blynk app
+
+DHT dht(DHTPIN, DHTTYPE);                            //structure containing dht variable (arguments)     
+float t;                                             //temperature
+float h;                                             //humidity
+float thr =30;                                       //setpoint
+int LED = D7;                                        //onboardled
+void setup()
+{
+   
+    Serial.begin(9600);                             //baud-rate defined                 
+    Serial.println("DHT11 test!");                  //print "DHT22 test!" on serial window and cursor to new line
+  
+    dht.begin();                                     // Start DHT sensor
+    pinMode(LED, OUTPUT);                            //configures the specified pin to behave either as an input (with or without an internal weak pull-up or pull-down resistor), or an output
+                                                     //pin(pin,mode)
+    Blynk.begin(auth);                               //here your devices connect to blynk cloud                         
+    
+}
+BLYNK_READ(V1)                                      //from blynk app virtual pin 1
+    {
+        
+Blynk.virtualWrite(V1, t);                           //the device can send data to the app 
+    }                                                //temperature guage setting
+    
+BLYNK_READ(V2)                                       //from blynk app virtual pin 2
+    {
+        
+    Blynk.virtualWrite(V2, h);                       //the device send data to the app
+    }                                                //humidity guage setting
+    
+void loop() 
+{    
+    //delay(60000);
+    
+     h = dht.getHumidity();                           //Humidity measurement
+  
+     t = dht.getTempCelcius();                        //temperature measurement in celcius
+   
+    float f = dht.getTempFarenheit();                  //temperature measurement in farenheit
+
+    
+    if (isnan(h) || isnan(t) || isnan(f))             // function determines whether a value is an illegal number (Not-a-Number). This function returns true if the value equates to NaN. Otherwise it returns false
+ {
+        Serial.println("Failed to read from DHT sensor!");    //serially print "Failed to read from DHT sensor!" and cursor to new line
+        return;
+    }
+    if (t>thr)                                               //temperature value greater than threshold
+    {
+        digitalWrite(LED, HIGH);                            //led will be high
+        Particle.publish("HIGH TEMP ALERT", PRIVATE);
+            
+    }
+    else  
+    {
+        digitalWrite(LED, LOW);                             //led will be low
+        Particle.publish("LOW TEMP ALERT", PRIVATE);
+    }
+    
+    Serial.print("Humid: "); 
+    Serial.print(h);
+    Serial.print("% - ");
+    Serial.print("Temp: "); 
+    Serial.print(f);
+    Serial.print("*F ");
+    Serial.println(Time.timeStr());
+    
+    Blynk.run();                                            //this function is frequently called to process incoming commands and perform housekeeping of blynk connection
+    
+    Particle.publish("temp", String (t));
+    Particle.publish("humi", String (h));
+}
