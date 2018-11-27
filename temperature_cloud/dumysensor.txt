@@ -1,0 +1,18 @@
+int led = D7;                                 // set led at digital 7 pin
+
+void setup()                                  // initalization of variables
+{
+  pinMode(led, OUTPUT);                       //led as output
+}
+
+void loop() 
+{
+  digitalWrite(led, HIGH);                     //it takes two arguments, pin: the number of the pin whose value you wish to set and value: HIGH or LOW.   
+
+  String temp = String(random(60, 80));        //This form allows you to generate random text strings. 
+  Particle.publish("temp", temp, PRIVATE);     //publish this private event 
+  delay(30000);                                //wait 30sec
+
+  digitalWrite(led, LOW);                      //set led low    
+  delay(30000);                                //wait 30sec
+}
