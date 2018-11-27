@@ -1,0 +1,51 @@
+int led = D0;                      //set led to digital pin 0
+
+int ldr = A0;                      //set ldr one nob to analog 0 
+int power = A5;                    //and another nob to analog 5 
+
+int analogvalue;                  
+
+void setup()                      //initalization of variables
+{
+    pinMode(led,OUTPUT);          // led as output
+    pinMode(ldr,INPUT);            // ldr as input
+    pinMode(power,OUTPUT);          // power as output 
+  
+    digitalWrite(power,HIGH);                        //initally set power pin as high
+    Particle.function("led",ledToggle);              //Expose a function through the Cloud so that it can be called
+                                                     //Particle.function allows code on the device to be run when requested from the cloud API.
+                                                     //Up to 15 cloud functions may be registered and each function name is limited to a maximum of 12 characters.
+                                                    // declare a Particle.function so that we can turn the LED on and off from the cloud.
+                                                   // This is saying that when we ask the cloud for the function "led", it will employ the function ledToggle() from this app
+}
+
+void loop() 
+{
+    
+    analogvalue = analogRead(ldr);    //set analogvalue equal to ldr
+    delay(100);                       //delay of 1sec
+
+}
+                                    // This is the ledToggle function we registered to the "led" Particle.function earlier.
+                                   //the function returns a value to us to let us know what happened.
+                                   //In this case, it will return 1 for the LEDs turning on, 0 for the LEDs turning off,
+                                  //and -1 if we received a totally bogus command that didn't do anything to the LEDs. 
+int ledToggle                           
+{
+
+    if 
+ {
+        digitalWrite(led,HIGH);                 //it voltage will be set to 3.3v
+        return 1;
+    }
+    else if 
+ {
+        digitalWrite(led,LOW);                  //it voltage will be set to 0v
+        return 0;
+    }
+    else 
+{
+        return -1;
+    }
+
+}
