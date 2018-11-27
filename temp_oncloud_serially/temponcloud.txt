@@ -1,0 +1,48 @@
+#include <Adafruit_DHT.h>                               //blynk library
+
+#include "Adafruit_DHT.h"                              //dht library  
+ 
+#define DHTPIN D2                                       //pin defined
+
+#define DHTTYPE DHT11                                   //sensor type
+
+DHT dht(DHTPIN, DHTTYPE);                               //structure containing dht variable (arguments)                            
+
+void setup() 
+{   
+    Serial.begin(9600);                                  //baud-rate defined 
+    Serial.println("DHT11 test!");                       //print "DHT22 test!" on serial window and cursor to new line
+
+    dht.begin();                                         // Start DHT sensor
+}
+
+void loop() 
+{
+    delay(60000);                                       //wait for 60sec
+    
+    float h = dht.getHumidity();                         //Humidity measurement
+  
+    float t = dht.getTempCelcius();                      //temperature measurement
+   
+    float f = dht.getTempFarenheit();                   //temperature measurement in farenheit
+
+    
+    if (isnan(h) || isnan(t) || isnan(f))              // function determines whether a value is an illegal number (Not-a-Number). This function returns true if the value equates to NaN. Otherwise it returns false
+{
+        Serial.println("Failed to read from DHT sensor!");        //serially print "Failed to read from DHT sensor!" and cursor to new line
+        return;
+    }
+
+   
+    Serial.print("Humid: "); 
+    Serial.print(h);
+    Serial.print("% - ");
+    Serial.print("Temp: "); 
+    Serial.print(f);
+    Serial.print("*F ");
+    Serial.println(Time.timeStr());
+
+    
+    Particle.publish("temp", String (t));                          //publish data
+    Particle.publish("humi", String (h));
+}
