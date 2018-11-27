@@ -1,0 +1,27 @@
+function collectDatadht22()                           //function defined in exelsheet that is collectDatadht22
+{
+  var  sheet = SpreadsheetApp.getActiveSheet();     //gets hold of our current active sheet (Sheet1 of Numbers API Example spreadsheet) and assigns it to a variable called sheet, so that we can access it using that name.
+                                                  // make a GET request to the API and We’re using the UrlFetchApp class to communicate with other applications on the internet to access resources, to fetch a URL.
+  var response = UrlFetchApp.fetch("https://api.spark.io/v1/devices/260044000147373334363431/temp?access_token=e6002b89cbda69d4e4b26f08346f17315adf9b4d");
+  var response2 = UrlFetchApp.fetch("https://api.spark.io/v1/devices/260044000147373334363431/humidity?access_token=e6002b89cbda69d4e4b26f08346f17315adf9b4d");
+
+  try {
+                                                     //assigns the response text (our data) to a variable called response, so we can refer to it using that name
+    var response = JSON.parse(response.getContentText()); // parse the JSON the Core API created
+    var result = unescape(response.result); // you'll need to unescape before your parse as JSON
+
+    var response2 = JSON.parse(response2.getContentText()); // parse the JSON the Core API created
+    var result2 = unescape(response2.result); // you'll need to unescape before your parse as JSON
+
+    try {
+      var p = JSON.parse(result);                            // parse the JSON you created
+      var p2 = JSON.parse(result2);                         // parse the JSON you created
+      var d = new Date();                                  // time stamps are always good when taking readings
+      sheet.appendRow([d, p.t, p2.t]);                    // append the date and data to the sheet
+      sheet.getRange(2,4).setValue(d);                   //we get cell A1 (range at 2,4) and set the value in that cell to equal the variable d, which holds the response text.
+      sheet.getRange(2,5).setValue(p.t);
+      sheet.getRange(2,6).setValue(p2.t);
+      } catch(e)
+    {
+      Logger.log("Unable to do second parse"); // log the text that you retrieved
+    }
