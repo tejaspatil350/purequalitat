@@ -1,0 +1,45 @@
+function collectDatadht22() {
+  var  sheet = SpreadsheetApp.getActiveSheet();
+
+  var response = UrlFetchApp.fetch("https://api.spark.io/v1/devices/260044000147373334363431/temp?access_token=e6002b89cbda69d4e4b26f08346f17315adf9b4d");
+  var response2 = UrlFetchApp.fetch("https://api.spark.io/v1/devices/260044000147373334363431/humidity?access_token=e6002b89cbda69d4e4b26f08346f17315adf9b4d");
+  var response3 = UrlFetchApp.fetch("https://api.spark.io/v1/devices/260044000147373334363431/threshold?access_token=e6002b89cbda69d4e4b26f08346f17315adf9b4d");
+  
+  try {
+    var response = JSON.parse(response.getContentText()); // parse the JSON the Core API created
+    var result = unescape(response.result); // you'll need to unescape before your parse as JSON
+
+    var response2 = JSON.parse(response2.getContentText()); // parse the JSON the Core API created
+    var result2 = unescape(response2.result); // you'll need to unescape before your parse as JSON
+    
+    var response3 = JSON.parse(response3.getContentText()); // parse the JSON the Core API created
+    var result3 = unescape(response3.result); // you'll need to unescape before your parse as JSON
+    
+    try {
+      var p = JSON.parse(result); // parse the JSON you created
+      var p2 = JSON.parse(result2); // parse the JSON you created
+      
+      var p3 = JSON.parse(result3); // parse the JSON you created
+      
+      
+      var d = new Date(); // time stamps are always good when taking readings
+      
+      sheet.appendRow([d, p.t, p2.t,p3.t]); // append the date and data to the sheet
+      
+      sheet.getRange(2,4).setValue(d);
+      sheet.getRange(2,5).setValue(p.t);
+      sheet.getRange(2,6).setValue(p2.t);
+      
+      sheet.getRange(2,6).setValue(p3.t);
+    
+      
+      } catch(e)
+    {
+      Logger.log("Unable to do second parse");
+    }
+  } catch(e)
+  {
+    Logger.log("Unable to return JSON");
+  }
+  
+}
