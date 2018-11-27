@@ -1,0 +1,16 @@
+int LED = D3;                   //define LED variable to d3 pin
+                                // initilization of variables
+void setup()                      
+{
+ Serial.begin(9600);           // via USB port and Enables serial channel with specified configuration.
+ pinMode(LED, OUTPUT);         //define LED as output
+}
+
+void loop()  
+{
+    Serial.print("hello");                       //print serially hello
+    analogWrite(LED, 255);                       // Writes an analog value to a pin as a digital PWM (pulse-width modulated) signal
+    Serial.println(digitalRead(LED));            
+    
+    delay(1000);
+}
