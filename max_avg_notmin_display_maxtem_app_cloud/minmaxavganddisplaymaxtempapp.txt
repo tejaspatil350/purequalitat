@@ -1,0 +1,135 @@
+#include <Adafruit_DHT.h>                         //include dht library
+
+#include <blynk.h>                                //include blynk library
+
+#define DHTPIN A2                                 //analog 2 pin defined for dht sensor    
+
+#define DHTTYPE DHT11                             //type of sensor defined
+
+char auth [] ="fc51a600bfd347eb9edf6e70e9a13b07 ";        //authentication token of blynk app
+
+DHT dht(DHTPIN, DHTTYPE);                         // structure containing dht variable (arguments)
+
+float t;                                        //temperature(t) as float value
+float h;                                        //humidity(h) as float value
+float thr =30;                                  //threshold(thr) as float value
+int LED = D7;                                   //onboard led at digital 7 pin
+int LEDON = D2;                                 //LEDON at digital pin 2
+
+float maxt;                                    //maximum temperature (maxt) as float value
+float mint;                                    //minimum temperature (mint) as float value
+float sum;                                     //sum of temperature value for calculating average 
+
+float total=0;                                 //initally total equal to 0
+float avg;                                     //average temperature (avg) as float value 
+
+void setup()
+
+{   
+    Serial.begin(9600);                         //baud rate defined 
+    Serial.println("DHT11 test!");              //print "DHT11 test!" on serial window and cursor to new line 
+
+    dht.begin();                                //start dht sensor
+    pinMode(LED, OUTPUT);                       //set LED as output
+    pinMode(LEDON, OUTPUT);
+        
+    Blynk.begin(auth);                         //here your devices connect to blynk cloud
+    
+}
+BLYNK_READ(V1)                                 //read virtual pin 1 from blynk app
+    {
+        
+    Blynk.virtualWrite(V1, t);                //write temperature value to virtual pin 1
+    }                                         //temperature guage setting
+    
+BLYNK_READ(V2)                               //read virual pin 2 from blynk app
+    {
+        
+    Blynk.virtualWrite(V2, h);               //write humidity value to virtual pin 2
+    }                                        //humidity guage setting
+
+BLYNK_READ(V3)                              //read virtual pin 3 form blynk app
+    {
+        
+    Blynk.virtualWrite(V3, maxt);          //write maximum temperature value to virtual pin 3
+    }                                      //labeled value setting
+    
+BLYNK_WRITE(V0)                            //write setpoint value to virual pin 0
+    {
+    thr = param.asFloat();                 //get value as a float               
+    }                                       //input text setting
+void loop() 
+{    
+    delay(6000);                          //wait for 6sec
+    
+     h = dht.getHumidity();               //Humidity measurement
+  
+     t = dht.getTempCelcius();           //temperature measurement celcuis
+   
+    float f = dht.getTempFarenheit();    //temperature measurement in farenheit                 
+    
+    if (isnan(h) || isnan(t) || isnan(f))    // function determines whether a value is an illegal number (Not-a-Number). This function returns true if the value equates to NaN. Otherwise it returns false
+ {
+        Serial.println("Failed to read from DHT sensor!");      //serially print "Failed to read from DHT sensor!" and cursor to new line
+        return;
+    }
+    if (t>thr)                                        //temperature value greater than threshold            
+    {
+        digitalWrite(LED, HIGH);                       //led will be high
+   // Particle.publish("HIGH TEMP ALERT", PRIVATE);
+       
+    }
+    else  
+    {
+        digitalWrite(LED, LOW);                      //led will be low
+//Particle.publish("LOW TEMP ALERT", PRIVATE);
+    }
+    
+    
+    if (t>maxt)                                   //when t is greater than maxt
+    {
+        maxt=t;                                   //maxt equal to t
+    
+    }
+    if (t<mint)                              //when t is less than mint                          
+    {
+        mint=t;                              //mint equal to t
+    
+    }
+    
+    sum = sum + t;                         //sum of temperature value for taking average
+    total++;                               //increment value of total
+   if (total > 10);                        //when total is greater than 10
+   {
+    avg = sum/total;                        //average formula
+    sum = 0;                                //again sum value equal to 0
+    total = 0;                              //total value equal to 0
+    
+   }
+    //Serial.print("Humid: "); 
+    //Serial.print(h);
+    //Serial.print("% - ");
+    //Serial.print("Temp: "); 
+    //Serial.print(t);
+    //Serial.print("*C ");
+    //Serial.println(Time.timeStr());
+    
+    Serial.print("mintemp");                   //print "mintemp" in serial window
+    Serial.print(mint);                        //print value of mint
+    Serial.print("maxtemp");                   //print "maxtemp" in serial window
+    Serial.print(maxt);                        //print value of maxt
+    Serial.print("avgtemp");                   //print "avgtemp" in serial window
+    Serial.print(avg);                          //print value of avg
+    Serial.print("total");                      //print "total" in serial window
+    Serial.print(total);                        //print value of total
+    
+    Blynk.run();                              //this function is frequently called to process incoming commands and perform housekeeping of blynk connection                             
+    
+   //Particle.publish("temp", String (t));
+  // Particle.publish("humi", String (h));
+   
+   Particle.publish("mintemp", String (mint));  //publish data
+   Particle.publish("maxhumi", String (maxt));
+   Particle.publish("avgtemp", String (avg));
+  
+}
