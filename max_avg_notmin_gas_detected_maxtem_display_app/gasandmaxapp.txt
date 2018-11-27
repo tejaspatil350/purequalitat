@@ -1,0 +1,163 @@
+#include <blynk.h>                                    //blynk library
+
+#include <Adafruit_DHT_Particle.h>                    //dht library 
+
+# include <math.h>                                    //math library
+
+#define DHTPIN A2                                     //pin defined 
+
+#define DHTTYPE DHT22                                 //sensor type
+
+char auth [] ="fc51a600bfd347eb9edf6e70e9a13b07 ";    //token of blynk app
+
+DHT dht(DHTPIN, DHTTYPE);                             //structure containing dht variable (arguments)            
+
+float t;                                              //temperature
+float h;                                              //humidity
+float thr =30;                                        //setpoint
+int LED = D7;                                         //onboardled                                 
+int LEDON = D2;                                       //offboardled to control from blynk app
+
+float maxt;                                           //max temperature                                    
+float mint;                                           //min temperarure
+float sum;                                            //sum of temperature data
+
+float total=0;                                        //total count of events                           
+float avg;                                            //avearge no of temperature
+
+void setup()                                          //to initialize variables, pin modes, start using libraries
+
+{   
+    Serial.begin(9600);                              //baud-rate defined
+    Serial.println("DHT22 test!");                   //print "DHT22 test!" on serial window and cursor to new line
+
+    dht.begin();                                    // Start DHT sensor                       
+    pinMode(LED, OUTPUT);                           //configures the specified pin to behave either as an input (with or without an internal weak pull-up or pull-down resistor), or an output     
+    pinMode(LEDON, OUTPUT);                         //pin(pin,mode)
+        
+    Blynk.begin(auth);                             //here your devices connect to blynk cloud           
+    
+}
+BLYNK_READ(V1)                                     //from blynk app virtual pin 1
+    
+{       
+    Blynk.virtualWrite(V1, t);                    //the device can send data to the app
+    }                                             //temperature guage setting
+    
+BLYNK_READ(V2)                                     //from blynk app virtual pin 2
+    {
+        
+    Blynk.virtualWrite(V2, h);                     //the device send data to the app
+    }                                              //humidity guage setting
+
+BLYNK_READ(V3)                                    //from blynk app virtual pin 3
+    {
+        
+    Blynk.virtualWrite(V3, maxt);                 //the device send data to the app
+    }                                             //labeled value settings
+    
+BLYNK_WRITE(V0)                                  //from blynk app virtual pin 0 to set setpoint value for temperature
+{
+    thr = param.asFloat();                         //get value as a float                   
+}                                                  //input text setting 
+
+void loop() 
+{    
+    float sensor_volt;                             //gas sensor value in voltage
+    float sensorValue;                             //gas sensor value
+
+    sensorValue = analogRead(A0);                 //The device has 8 channels (A0 to A7) with a 12-bit resolution and map input voltages between 0 and 3.3 volts into integer values between 0 and 4095.
+                                                  //Reads the value from the A0 pin.
+    double lpgppm = 26.572*exp(1.2894*(sensorValue*3.3/4095)); //Multiply raw analog value by 3.3/4095 to convert to a voltage return ppm; 
+
+    const int LPGthresh =450 ;                     //set LPGthreshold equal to 450                  
+
+    if (lpgppm >= LPGthresh)                        //lpgppm value greater than  or equal to LPGthresh 
+    {
+    Serial.print("lpgdetected");                     //print "lpgdetected" in serial window                   
+    Blynk.virtualWrite(V3, "lpgdetected");           //the device send data to the app of virtual pin 3 as a text lpgdetected
+    }
+
+
+    delay(6000);                                    //wait for 6sec
+
+    
+     h = dht.getHumidity();                          //Humidity measurement                        
+  
+     t = dht.getTempCelcius();                       //temperature measurement in celcius
+   
+    float f = dht.getTempFarenheit();                //temperature measurement in farenheit
+
+    
+    if (isnan(h) || isnan(t) || isnan(f))           //function determines whether a value is an illegal number (Not-a-Number). This function returns true if the value equates to NaN. Otherwise it returns false 
+{
+        Serial.println("Failed to read from DHT sensor!");     //serially print "Failed to read from DHT sensor!" and cursor to new line
+        return;
+    }
+    if (t>thr)                                                //temperature value greater than threshold
+    {
+        digitalWrite(LED, HIGH);                              //led will be high
+       // Particle.publish("HIGH TEMP ALERT", PRIVATE);
+        
+    
+    }
+    else  
+    {
+        digitalWrite(LED, LOW);                               //led will be low
+    //    Particle.publish("LOW TEMP ALERT", PRIVATE);
+    }
+    
+    
+    if (t>maxt)                                              //when t is greater than maxt
+    {
+        maxt=t;                                              //maxt equal to t
+    
+    }
+    if (t<mint)                                              //when t is less than mint
+    {
+        mint=t;                                              //mint equal to t
+    
+    }
+    
+    sum = sum + t;                                          //sum of temperature value for taking average
+    total++;                                                //increment value of total
+   if (total > 10);                                         //when total is greater than 10
+   {
+    avg = sum/total;                                       //average formula
+    sum = 0;                                               //again sum value equal to 0
+    total = 0;                                             //total value equal to 0
+    
+   }
+    //Serial.print("Humid: "); 
+    //Serial.print(h);
+    //Serial.print("% - ");
+    //Serial.print("Temp: "); 
+    //Serial.print(t);
+    //Serial.print("*C ");
+    //Serial.println(Time.timeStr());
+    
+    Serial.print("mintemp");                             //print "mintemp" in serial window
+    Serial.print(mint);                                  //print value of mint
+    Serial.print("maxtemp");                             //print "maxtemp" in serial window
+    Serial.print(maxt);                                  //print value of maxt
+    Serial.print("avgtemp");                             //print "avgtemp" in serial window 
+    Serial.print(avg);                                   //print value of avg
+    Serial.print("total");                               //print "total" in serial window
+    Serial.print(total);                                 //print value of total
+    
+    Serial.print("sensorvalue = ");                      //print "sensorvalue = " in serial window                     
+    Serial.print(sensorValue);                           //print value of sensorValue
+    Serial.println("V");                                 //print "V" in serial window
+    Serial.print("lpgpp");                               //print "lpgpp" in serial window
+    Serial.print(lpgppm);                                //print value of lpgppm
+    
+    Blynk.run();                                          //this function is frequently called to process incoming commands and perform housekeeping of blynk connection
+                                                          //Publish an event through the Particle Device Cloud that will be forwarded to all registered listeners, such as callbacks, subscribed streams of Server-Sent Events, and other devices listening via Particle.subscribe().
+   //Particle.publish("temp", String (t));
+  // Particle.publish("humi", String (h));
+   
+   Particle.publish("mintemp", String (mint));             //publish data
+   Particle.publish("maxhumi", String (maxt));
+   Particle.publish("avgtemp", String (avg));
+  
+}
