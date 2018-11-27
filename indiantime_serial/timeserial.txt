@@ -1,0 +1,22 @@
+void setup()
+{
+    Particle.syncTime();                                        /*sync to current time to the particle cloud*/
+    Serial.begin(9600);                                         //baud rate defined
+}
+
+void loop()
+{
+    Time.zone(+5.43);                               /* add time zone of your country, india’s time zone is (+5.43)*/
+    Serial.print(Time.hourFormat12(Time.now()));    /* print serially current hour*/
+    Serial.print(":");                              //print serially ":"
+    Serial.print(Time.minute(Time.now()));          /* print serially current minute*/
+    Serial.print(":");                              //print serially ":" 
+    Serial.print(Time.second(Time.now()));          /* print serially seconds hour*/
+    
+if(!Time.isPM())                                    
+        Serial.println(" AM");                     //serial print " AM" and cursor to new line
+    else
+        Serial.println(" PM");                     //serial print " PM" and cursor to new line
+    delay(1000);                                   //wait for 1sec                                
+    
+}
