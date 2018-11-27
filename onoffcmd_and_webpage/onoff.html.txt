@@ -1,0 +1,24 @@
+<!-- 260044000147373334363431                            //your-device-ID
+e6002b89cbda69d4e4b26f08346f17315adf9b4d-->              //your-access-token
+<!DOCTYPE>
+<html>
+  <body>
+  <center>
+  <br>
+  <br>
+  <br>
+  <form action="https://api.particle.io/v1/devices/260044000147373334363431/led?access_token=e6002b89cbda69d4e4b26f08346f17315adf9b4d" method="POST">        //your-device-ID, access-token, URL and method 
+    Tell your device what to do!<br>                              //display on web page
+    <br>
+    <input type="radio" name="arg" value="on">Turn the LED on.  //display on web page
+    <br>
+    <input type="radio" name="arg" value="off">Turn the LED off.  //display on web page
+    <br>
+    <br>
+    <input type="submit" value="Do it!">                          //display on web page
+  </form>
+  </center>
+  </body>
+</html>
+---------------------------
+*/
