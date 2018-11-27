@@ -1,0 +1,16 @@
+#include <blynk.h>                                     //blynk library
+
+char auth[] = "fc51a600bfd347eb9edf6e70e9a13b07";     //authentication token of blynk app
+
+void setup()                                          //initalization 
+{
+
+    delay(5000);                                      // Allow board to settle
+
+    Blynk.begin(auth);                                //here your devices connect to blynk cloud
+}
+
+void loop()
+{
+    Blynk.run();                          //this function is frequently called to process incoming commands and perform housekeeping of blynk connection                                   
+}
