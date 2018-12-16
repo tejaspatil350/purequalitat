@@ -1,0 +1,61 @@
+// This #include statement was automatically added by the Particle IDE.
+#include <Adafruit_DHT_Particle.h>
+
+// This #include statement was automatically added by the Particle IDE.
+#include <LiquidCrystal.h>
+
+// This #include statement was automatically added by the Particle IDE.
+#include "LiquidCrystal/LiquidCrystal.h"
+
+
+
+#define DHTPIN 6              //pin defined
+
+#define DHTTYPE DHT22		//sensor type
+
+DHT dht(DHTPIN, DHTTYPE);       // structure containing dht variable (arguments)
+
+
+
+
+LiquidCrystal lcd(5, 4, 3, 2, 1, 0);       //pins of electron board
+
+void setup() {
+    
+	Serial.begin(9600);                      //Enables serial channel with specified configuration.
+	Serial.println("DHTxx test!");           //serial print "DHTxx test!"
+
+	dht.begin();                              // Start DHT sensor
+
+
+ lcd.begin(16, 2);                             //set lcd numbers of columns and rows
+
+}
+
+void loop() {
+
+ 
+ delay(2000);                                //wait 2sec
+
+
+	float h = dht.getHumidity();               //Humidity measurement
+
+	float t = dht.getTempCelcius();            //temperature measurement
+
+	float f = dht.getTempFarenheit();            //temperature in farenheit measurement
+  
+
+	if (isnan(h) || isnan(t) || isnan(f))                          // function determines whether a value is an illegal number (Not-a-Number). This function returns true if the value equates to NaN. Otherwise it returns false
+{
+	Serial.println("Failed to read from DHT sensor!");             //print "Failed to read from DHT sensor!" and cursor to new line
+	return;
+	}
+
+ lcd.setCursor(0, 1);                   //set the cursor to column 0, line 1
+ lcd.print("temp");                       //print "temp" on lcd
+ lcd.print(t);                            //print value of t on lcd
+ 
+Serial.print("Temp: ");                    //print "Temp: " on serial window
+	Serial.println(t);                     //print value of t
+	
+}
